@@ -6,4 +6,5 @@ import com.dto.Ville;
 
 public interface VilleDAO {
 	public ArrayList<Ville> findAllVilles();
+	public ArrayList<Ville> getInfoVille(String codePostal);
 }
