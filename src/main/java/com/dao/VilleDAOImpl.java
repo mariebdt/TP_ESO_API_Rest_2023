@@ -12,66 +12,99 @@ import com.dto.Ville;
 
 @Repository
 public class VilleDAOImpl implements VilleDAO{
-
 	public ArrayList<Ville> findAllVilles() {
+		
 		System.out.println("findAllVilles");
+		
+		ArrayList<Ville> listeVille = new ArrayList<Ville>();
 		
 		
 		try
 	    {
-	      //étape 1: charger la classe de driver
 	      Class.forName("com.mysql.jdbc.Driver");
-	      //étape 2: créer l'objet de connexion
 	      Connection conn = DriverManager.getConnection(
 	      "jdbc:mysql://localhost:8889/TP_ESEO_MAVEN", "root", "root");
-	      //étape 3: créer l'objet statement 
 	      Statement stmt = conn.createStatement();
-	      ResultSet res = stmt.executeQuery("SELECT nom_commune FROM ville_france");
-	      //étape 4: exécuter la requête
-	      while(res.next())
-	        System.out.println(res.getString(1));
-	      //étape 5: fermez l'objet de connexion
+	      ResultSet res = stmt.executeQuery("SELECT * FROM ville_france");
+	      while(res.next()) {
+	        Ville ville = new Ville();
+	        ville.setCodeCommune(res.getString("Code_commune_INSEE"));
+	        ville.setNomCommune(res.getString("Nom_commune"));
+	        ville.setCodePostal(res.getString("Code_postal"));
+	        ville.setLibelleAcheminement(res.getString("Libelle_acheminement"));
+	        ville.setLigne(res.getString("Ligne_5"));
+	        listeVille.add(ville);
+	      }
 	      conn.close();
 	    }
 	    catch(Exception e){ 
 	      System.out.println(e);
 	    }
-		
-		
-		
-		ArrayList<Ville> listeVille = new ArrayList<Ville>();
-		Ville ville = new Ville();
-		ville.setCodePostal("44000");
-		ville.setLigne("ligne");
-		ville.setNomCommune("test");
-		
-		listeVille.add(ville);
 		
 		return listeVille;
 	}
 	
-	public ArrayList<Ville> getInfoVille(String codePostal) {
+	public Ville getInfoVille(String codePostal) {
 		System.out.println("getInfoVille");
+		Ville ville = new Ville();
 		try
 	    {
-	      //étape 1: charger la classe de driver
 	      Class.forName("com.mysql.jdbc.Driver");
-	      //étape 2: créer l'objet de connexion
 	      Connection conn = DriverManager.getConnection(
 	      "jdbc:mysql://localhost:8889/TP_ESEO_MAVEN", "root", "root");
-	      //étape 3: créer l'objet statement 
 	      Statement stmt = conn.createStatement();
-	      ResultSet res = stmt.executeQuery("SELECT nom_commune FROM ville_france");
-	      //étape 4: exécuter la requête
-	      while(res.next())
-	        System.out.println(res.getString(1));
-	      //étape 5: fermez l'objet de connexion
+	      ResultSet res = stmt.executeQuery("SELECT * FROM ville_france");
+	      while(res.next()) {
+				Ville villeTemp = new Ville();
+				villeTemp.setCodeCommune(res.getString("Code_commune_INSEE"));
+				villeTemp.setNomCommune(res.getString("Nom_commune"));
+				villeTemp.setCodePostal(res.getString("Code_postal"));
+				villeTemp.setLibelleAcheminement(res.getString("Libelle_acheminement"));
+				villeTemp.setLigne(res.getString("Ligne_5"));
+				if((villeTemp.getCodePostal()).equals(codePostal)) {
+					ville = villeTemp;
+					break;
+				}
+	      }
 	      conn.close();
 	    }
 	    catch(Exception e){ 
 	      System.out.println(e);
 	    }
-		ArrayList<Ville> listeVille = new ArrayList<Ville>();
-		return listeVille;
+		return ville;
+	}
+	
+	public void deleteVille(String codePostal) {
+		System.out.println("deleteVille");
+		try
+	    {
+	      Class.forName("com.mysql.jdbc.Driver");
+	      Connection conn = DriverManager.getConnection(
+	      "jdbc:mysql://localhost:8889/TP_ESEO_MAVEN", "root", "root");
+	      Statement stmt = conn.createStatement();
+	      stmt.executeUpdate("DELETE FROM ville_france WHERE Code_postal = '\"+codePostal+\"'");
+	      conn.close();
+	    }
+	    catch(Exception e){ 
+	      System.out.println(e);
+	    }
+	}
+	
+	public void insertVille(String codeInsee, String nomCommune, String codePostal, String libelleAcheminement, String ligne) {
+		System.out.println("insertVille");
+		try
+	    {
+	      Class.forName("com.mysql.jdbc.Driver");
+	      Connection conn = DriverManager.getConnection(
+	      "jdbc:mysql://localhost:8889/TP_ESEO_MAVEN", "root", "root");
+	      Statement stmt = conn.createStatement();
+	      stmt.executeUpdate("INSERT INTO `ville_france` (`Code_commune_INSEE`, `Nom_commune`, `Code_postal`, `Libelle_acheminement`, `Ligne_5`, `Latitude`, `Longitude`)"
+	      		+ "VALUES ('\"+codeInsee+\"', '\"+nomCommune+\"', '\"+codePostal+\"',"
+	      		+ "'\"+libelleAcheminement+\"', '\"+ligne+\"', \"\", \"\")");
+	      conn.close();
+	    }
+	    catch(Exception e){ 
+	      System.out.println(e);
+	    }
 	}
 }
